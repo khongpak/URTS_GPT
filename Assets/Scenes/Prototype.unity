@@ -390,6 +390,7 @@ MonoBehaviour:
   minXZ: {x: -40, y: -40}
   maxXZ: {x: 40, y: 40}
   moveSmoothTime: 0.12
+  resetRotation: 1
 --- !u!1 &1768413765
 GameObject:
   m_ObjectHideFlags: 0
