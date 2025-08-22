@@ -109,4 +109,12 @@ public class RtsCamera : MonoBehaviour
         Gizmos.DrawWireCube(center, size);
     }
 #endif
+
+#if UNITY_EDITOR
+    void OnGUI()
+    {
+        var rect = new Rect(300, 10, 160, 24);
+        edgePan = GUI.Toggle(rect, edgePan, " Edge Pan");
+    }
+#endif
 }
