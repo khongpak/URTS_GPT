@@ -1,31 +1,32 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-namespace URTS_GPT.Camera
+namespace URTS_GPT.CameraSystem
 {
     public class RtsCamera : MonoBehaviour
     {
         [Header("Pan")]
-        public float panSpeed = 20f;
-        public float edge = 10f;
-        public bool edgePan = true;
+        [SerializeField] private float panSpeed = 20f;
+        [SerializeField] private float edge = 10f;
+        [SerializeField] private bool edgePan = true;
 
         [Header("Zoom")]
-        public float zoomSpeed = 200f;
-        public float minY = 10f;
-        public float maxY = 60f;
-        public float zoomSmoothTime = 0.08f;
-        public bool invertScroll = false;
+        [SerializeField] private float zoomSpeed = 200f;
+        [SerializeField] private float minY = 10f;
+        [SerializeField] private float maxY = 60f;
+        [SerializeField] private float zoomSmoothTime = 0.08f;
+        [SerializeField] private bool invertScroll = false;
 
         [Header("Bounds")]
-        public bool useBounds = false;
-        public Vector2 minXZ = new(-50, -50);
-        public Vector2 maxXZ = new(50, 50);
+        [SerializeField] private bool useBounds = false;
+        [SerializeField] private Vector2 minXZ = new(-50, -50);
+        [SerializeField] private Vector2 maxXZ = new(50, 50);
 
         [Header("Smoothing")]
-        public float moveSmoothTime = 0.08f;
+        [SerializeField] private float moveSmoothTime = 0.08f;
 
         [Header("Reset")]
-        public bool resetRotation = true; //เลือกว่าจะ รีเซ็ตมุมกล้องด้วยหรือไม่
+        [SerializeField] private bool resetRotation = true; //เลือกว่าจะ รีเซ็ตมุมกล้องด้วยหรือไม่
 
         Vector3 moveVel;   // เวคเตอร์ความเร็วชั่วคราวสำหรับ SmoothDamp (pan)
         float zoomVel;     // ความเร็วชั่วคราวสำหรับ SmoothDamp (zoom)
@@ -41,8 +42,6 @@ namespace URTS_GPT.Camera
         {
             startCameraPos = transform.position;
             startCameraRota = transform.rotation;
-
-            Debug.Log($"X : {startCameraPos.x}, Y : {startCameraPos.y}, Z : {startCameraPos.z}");
         }
 
         void Update()
@@ -75,7 +74,8 @@ namespace URTS_GPT.Camera
             Vector3 desiredMove = (right * h + fwd * v) * panSpeed;
 
             // Edge pan
-            if (edgePan)
+            bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+            if (edgePan && !overUI)
             {
                 Vector3 m = Input.mousePosition;
                 if (m.x <= edge) desiredMove += -right * panSpeed;

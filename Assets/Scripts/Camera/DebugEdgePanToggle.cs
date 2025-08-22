@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace URTS_GPT.Camera
+namespace URTS_GPT.CameraSystem
 {
     public class DebugEdgePanToggle : MonoBehaviour
     {
@@ -8,7 +8,14 @@ namespace URTS_GPT.Camera
 
         void Awake()
         {
-            if (rtsCamera == null) rtsCamera = FindFirstObjectByType<RtsCamera>();
+            if (rtsCamera == null)
+            {
+        #if UNITY_2023_1_OR_NEWER
+                rtsCamera = FindFirstObjectByType<RtsCamera>(); // ใหม่
+        #else
+                rtsCamera = FindObjectOfType<RtsCamera>();      // เก่า
+        #endif
+            }
         }
 
     #if UNITY_EDITOR
