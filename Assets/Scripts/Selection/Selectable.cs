@@ -1,0 +1,60 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace URTS_GPT.SelectionSystem
+{
+    [DisallowMultipleComponent]
+    public class Selectable : MonoBehaviour
+    {
+        public static readonly HashSet<Selectable> Registry = new HashSet<Selectable>();
+
+        [Header("Renderers to tint via Emission")]
+        [SerializeField] private Renderer[] renderers;
+        [SerializeField] private Color selectedColor = new Color(0f, 0.8f, 1f, 1f);
+        [SerializeField] private Color hoverColor = new Color(1f, 0.9f, 0.2f, 1f);
+        [SerializeField] private float emission = 1.2f;
+
+        private bool isSelected;
+        private bool isHovered;
+        private MaterialPropertyBlock mpb;
+
+        private void OnEnable()
+        {
+            Registry.Add(this);
+            if (mpb == null) mpb = new MaterialPropertyBlock();
+            if (renderers == null || renderers.Length == 0)
+                renderers = GetComponentsInChildren<Renderer>();
+            RefreshVisual();
+        }
+
+        private void OnDisable() => Registry.Remove(this);
+
+        public void SetSelected(bool value) { isSelected = value; RefreshVisual(); }
+        public void ToggleSelected() { isSelected = !isSelected; RefreshVisual(); }
+        public void SetHovered(bool value) { isHovered = value; RefreshVisual(); }
+        public bool IsSelected => isSelected;
+
+        public Vector3 WorldCenter
+        {
+            get
+            {
+                var r = (renderers != null && renderers.Length > 0) ? renderers[0] : GetComponentInChildren<Renderer>();
+                return r != null ? r.bounds.center : transform.position;
+            }
+        }
+
+        private void RefreshVisual()
+        {
+            if (renderers == null) return;
+            foreach (var r in renderers)
+            {
+                r.GetPropertyBlock(mpb);
+                Color color = Color.black; float intensity = 0f;
+                if (isSelected) { color = selectedColor; intensity = emission; }
+                else if (isHovered) { color = hoverColor; intensity = emission * 0.7f; }
+                mpb.SetColor("_EmissionColor", color * intensity);
+                r.SetPropertyBlock(mpb);
+            }
+        }
+    }
+}
