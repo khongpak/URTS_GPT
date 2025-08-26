@@ -1,0 +1,51 @@
+﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\UI\SelectionBoxUI.cs
+// Export time: 2025-08-26 15:37:34
+// ProjectPath : C:\UnityProject\URTS_GPT\Assets
+// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
+// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
+
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace URTS_GPT.UI
+{
+    [RequireComponent(typeof(RectTransform))]
+    public class SelectionBoxUI : MonoBehaviour
+    {
+        [SerializeField] private Image image;
+        private RectTransform rect;
+        private Vector2 start;
+
+        private void Awake()
+        {
+            rect = GetComponent<RectTransform>();
+            if (image == null) image = GetComponent<Image>();
+            Hide();
+        }
+
+        public void Begin(Vector2 screenStart)
+        {
+            start = screenStart;
+            gameObject.SetActive(true);
+            SetRect(start, start);
+        }
+
+        public void Drag(Vector2 screenNow) => SetRect(start, screenNow);
+        public void End() => Hide();
+
+        private void SetRect(Vector2 a, Vector2 b)
+        {
+            Vector2 min = Vector2.Min(a, b);
+            Vector2 max = Vector2.Max(a, b);
+            rect.anchoredPosition = min;
+            rect.sizeDelta = max - min;
+            image.enabled = rect.sizeDelta.sqrMagnitude > 1f;
+        }
+
+        private void Hide()
+        {
+            image.enabled = false; // à¸„à¸‡ object à¹„à¸§à¹‰à¹€à¸žà¸·à¹ˆà¸­à¹„à¸¡à¹ˆà¹ƒà¸«à¹‰ GC à¸šà¹ˆà¸­à¸¢
+            rect.sizeDelta = Vector2.zero;
+        }
+    }
+}

@@ -1,0 +1,39 @@
+﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Camera\DebugEdgePanToggle.cs
+// Export time: 2025-08-26 15:37:34
+// ProjectPath : C:\UnityProject\URTS_GPT\Assets
+// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
+// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
+
+using UnityEngine;
+
+namespace URTS_GPT.CameraSystem
+{
+    public class DebugEdgePanToggle : MonoBehaviour
+    {
+    //     [SerializeField] RtsCamera rtsCamera;
+
+    //     void Awake()
+    //     {
+    //         if (rtsCamera == null)
+    //         {
+    //     #if UNITY_2023_1_OR_NEWER
+    //             rtsCamera = FindFirstObjectByType<RtsCamera>(); // à¹ƒà¸«à¸¡à¹ˆ
+    //     #else
+    //             rtsCamera = FindObjectOfType<RtsCamera>();      // à¹€à¸à¹ˆà¸²
+    //     #endif
+    //         }
+    //     }
+
+    // #if UNITY_EDITOR
+    //     void OnGUI()
+    //     {
+    //         if (rtsCamera == null) return;
+
+    //         var rect = new Rect(10, 10, 160, 24);
+    //         bool isOn = GUI.Toggle(rect, rtsCamera.IsEdgePanEnabled, " Edge Pan");
+    //         if (isOn != rtsCamera.IsEdgePanEnabled)
+    //             rtsCamera.SetEdgePan(isOn);
+    //     }
+    // #endif
+    }
+}

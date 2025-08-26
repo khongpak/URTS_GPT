@@ -1,0 +1,195 @@
+﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Selection\SelectionManager.cs
+// Export time: 2025-08-26 15:37:34
+// ProjectPath : C:\UnityProject\URTS_GPT\Assets
+// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
+// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
+
+using System.Collections.Generic;
+using UnityEngine;
+using URTS_GPT.UI;
+// ðŸ†• à¸•à¸£à¸§à¸ˆà¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI
+using UnityEngine.EventSystems;
+// ðŸ†• à¹ƒà¸Šà¹‰à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™à¹„à¸›à¸¢à¸±à¸‡à¸ˆà¸¸à¸”à¸«à¸¡à¸²à¸¢
+using URTS_GPT.MovementSystem;
+
+namespace URTS_GPT.SelectionSystem
+{
+    public class SelectionManager : MonoBehaviour
+    {
+        [SerializeField] private Camera mainCamera;
+        [SerializeField] private LayerMask selectableMask = ~0; // à¹à¸™à¸°à¸™à¸³à¸à¸£à¸­à¸‡à¹ƒà¸«à¹‰à¹€à¸«à¸¥à¸·à¸­à¹€à¸‰à¸žà¸²à¸° Layer "Unit"
+        [SerializeField] private SelectionBoxUI selectionBoxUI;
+
+        private readonly HashSet<Selectable> selected = new HashSet<Selectable>();
+        private Vector2 dragStart;
+        private bool dragging;
+        private Selectable hovered;
+
+        // ðŸ†• à¸ªà¸³à¸«à¸£à¸±à¸šà¸„à¸¥à¸´à¸à¸žà¸·à¹‰à¸™à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™
+        [SerializeField] private LayerMask groundLayer;
+        // ðŸ†• à¸£à¸°à¸¢à¸° Raycast à¹„à¸›à¸žà¸·à¹‰à¸™
+        [SerializeField] private float maxRaycastDistance = 1000f;
+
+        private void Awake()
+        {
+            if (mainCamera == null) mainCamera = Camera.main;
+        }
+
+        private void Update()
+        {
+            // â€” à¸£à¸°à¸šà¸šà¹€à¸¥à¸·à¸­à¸ (à¸‚à¸­à¸‡à¹€à¸”à¸´à¸¡à¸„à¸¸à¸“) â€”
+            UpdateHover();
+            HandleClickAndDrag();
+            // â€” à¸£à¸°à¸šà¸šà¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™ (à¹€à¸žà¸´à¹ˆà¸¡à¹ƒà¸«à¸¡à¹ˆ) â€”
+            HandleRightClickMove();
+        }
+
+        private void UpdateHover()
+        {
+            var hit = Raycast();
+            var newHovered = hit.HasValue ? hit.Value.selectable : null;
+            if (newHovered != hovered)
+            {
+                if (hovered != null && !selected.Contains(hovered)) hovered.SetHovered(false);
+                hovered = newHovered;
+                if (hovered != null && !selected.Contains(hovered)) hovered.SetHovered(true);
+            }
+        }
+
+        private (Selectable selectable, RaycastHit hit)? Raycast()
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 1000f, selectableMask))
+            {
+                var s = hit.collider.GetComponentInParent<Selectable>();
+                if (s != null) return (s, hit);
+            }
+            return null;
+        }
+
+        private void HandleClickAndDrag()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                dragStart = Input.mousePosition;
+                dragging = true;
+                selectionBoxUI?.Begin(dragStart);
+            }
+
+            if (dragging && Input.GetMouseButton(0))
+            {
+                selectionBoxUI?.Drag(Input.mousePosition);
+            }
+
+            if (dragging && Input.GetMouseButtonUp(0))
+            {
+                dragging = false;
+                var end = (Vector2)Input.mousePosition;
+                selectionBoxUI?.End();
+
+                Rect screenRect = GetScreenRect(dragStart, end);
+                bool isBox = screenRect.size.magnitude > 10f; // à¸à¸±à¸™à¸„à¸¥à¸´à¸à¸ªà¸±à¹ˆà¸™
+
+                bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+                bool ctrl  = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+
+                if (!shift && !ctrl) ClearSelection();
+                if (isBox) BoxSelect(screenRect, shift, ctrl);
+                else ClickSelect(shift, ctrl);
+            }
+        }
+
+        private void ClickSelect(bool shift, bool ctrl)
+        {
+            var hit = Raycast();
+            if (!hit.HasValue) return;
+            var s = hit.Value.selectable;
+
+            if (ctrl)
+            {
+                if (selected.Contains(s)) Deselect(s);
+                else Select(s);
+            }
+            else
+            {
+                // shift à¸«à¸£à¸·à¸­ none (none à¸–à¸¹à¸à¹€à¸„à¸¥à¸µà¸¢à¸£à¹Œà¹à¸¥à¹‰à¸§)
+                Select(s);
+            }
+        }
+
+        private void BoxSelect(Rect screenRect, bool shift, bool ctrl)
+        {
+            foreach (var s in Selectable.Registry)
+            {
+                Vector3 sp = mainCamera.WorldToScreenPoint(s.WorldCenter);
+                if (sp.z < 0f) continue; // à¸­à¸¢à¸¹à¹ˆà¸«à¸¥à¸±à¸‡à¸à¸¥à¹‰à¸­à¸‡
+                if (screenRect.Contains(sp))
+                {
+                    if (ctrl && selected.Contains(s)) Deselect(s);
+                    else Select(s);
+                }
+            }
+        }
+
+        private void Select(Selectable s)
+        {
+            if (selected.Add(s))
+            {
+                s.SetSelected(true);
+                s.SetHovered(false);
+            }
+        }
+
+        private void Deselect(Selectable s)
+        {
+            if (selected.Remove(s))
+            {
+                s.SetSelected(false);
+                if (s == hovered) s.SetHovered(true); // à¸à¸¥à¸±à¸šà¹„à¸›à¹‚à¸Šà¸§à¹Œ hover à¸–à¹‰à¸²à¸¢à¸±à¸‡à¸­à¸¢à¸¹à¹ˆà¹ƒà¸•à¹‰à¹€à¸¡à¸²à¸ªà¹Œ
+            }
+        }
+
+        public void ClearSelection()
+        {
+            foreach (var s in selected) s.SetSelected(false);
+            selected.Clear();
+        }
+
+        private static Rect GetScreenRect(Vector2 start, Vector2 end)
+        {
+            Vector2 min = Vector2.Min(start, end);
+            Vector2 max = Vector2.Max(start, end);
+            return new Rect(min, max - min);
+        }
+
+        // ==============================
+        // ðŸ†• à¸ªà¹ˆà¸§à¸™à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™à¸”à¹‰à¸§à¸¢à¸„à¸¥à¸´à¸à¸‚à¸§à¸²
+        // ==============================
+        private void HandleRightClickMove()
+        {
+            // à¸„à¸¥à¸´à¸à¸‚à¸§à¸²à¸à¸”à¸¥à¸‡à¹ƒà¸™à¹€à¸Ÿà¸£à¸¡à¸™à¸µà¹‰à¹„à¸«à¸¡
+            if (!Input.GetMouseButtonDown(1)) return;
+            // à¸–à¹‰à¸²à¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI à¹ƒà¸«à¹‰à¹„à¸¡à¹ˆà¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+            // à¸¢à¸´à¸‡à¹€à¸£à¸¢à¹Œà¸ˆà¸²à¸à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¹€à¸¡à¸²à¸ªà¹Œà¹„à¸›à¸¢à¸±à¸‡à¸‰à¸²à¸
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, maxRaycastDistance, groundLayer))
+            {
+                IssueMoveOrder(hit.point);
+            }
+        }
+
+        private void IssueMoveOrder(Vector3 destination)
+        {
+            foreach (var s in selected)
+            {
+                if (s == null) continue;
+                if (s.TryGetComponent<UnitMoveAgent>(out var mover))
+                {
+                    mover.MoveTo(destination);
+                }
+            }
+        }
+    }
+}

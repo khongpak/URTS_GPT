@@ -1,0 +1,84 @@
+﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Movement\UnitMoveAgent.cs
+// Export time: 2025-08-26 15:37:34
+// ProjectPath : C:\UnityProject\URTS_GPT\Assets
+// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
+// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
+
+// ðŸ†• à¹€à¸žà¸´à¹ˆà¸¡à¸ˆà¸²à¸à¸šà¸—à¸à¹ˆà¸­à¸™: using UnityEngine.EventSystems (à¸•à¸£à¸§à¸ˆà¸§à¹ˆà¸²à¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI)
+// ðŸ†• à¹€à¸žà¸´à¹ˆà¸¡à¸ˆà¸²à¸à¸šà¸—à¸à¹ˆà¸­à¸™: using URTS_GPT.MovementSystem (à¸­à¹‰à¸²à¸‡à¸–à¸¶à¸‡ UnitMoveAgent)
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace URTS_GPT.MovementSystem
+{
+    [RequireComponent(typeof(NavMeshAgent))]
+    public sealed class UnitMoveAgent : MonoBehaviour
+    {
+        [Header("References")]
+        [SerializeField] private NavMeshAgent agent;
+
+        [Header("Tuning")]
+        [SerializeField] private float stoppingDistance = 0.2f;
+        [SerializeField] private bool rotateTowardsVelocity = true;
+        [SerializeField] private float debugGizmoRadius = 0.15f;
+
+        private Vector3? lastDestination;
+
+        private void Reset()
+        {
+            agent = GetComponent<NavMeshAgent>();
+            agent.stoppingDistance = stoppingDistance;
+            agent.autoBraking = true;
+            agent.angularSpeed = 720f;
+            agent.acceleration = 40f;
+            agent.updateRotation = true;
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+        }
+
+        private void Awake()
+        {
+            if (agent == null) agent = GetComponent<NavMeshAgent>();
+            agent.stoppingDistance = stoppingDistance;
+            agent.updateRotation = rotateTowardsVelocity;
+        }
+
+        public void MoveTo(Vector3 worldPosition)
+        {
+            lastDestination = worldPosition;
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(worldPosition);
+            }
+            else
+            {
+                Debug.LogWarning($"{name}: NavMeshAgent is not on a NavMesh.");
+            }
+        }
+
+        public void Stop()
+        {
+            lastDestination = null;
+            if (agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+            }
+        }
+
+        public bool IsMoving()
+        {
+            if (!agent.isOnNavMesh) return false;
+            if (agent.pathPending) return true;
+            if (agent.remainingDistance > Mathf.Max(stoppingDistance, 0.01f)) return true;
+            return agent.velocity.sqrMagnitude > 0.01f;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (lastDestination.HasValue)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(lastDestination.Value, debugGizmoRadius);
+            }
+        }
+    }
+}
