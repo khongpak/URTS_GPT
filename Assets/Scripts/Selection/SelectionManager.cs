@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using URTS_GPT.UI;
+// 🆕 ตรวจเมาส์อยู่เหนือ UI
+using UnityEngine.EventSystems;
+// 🆕 ใช้สั่งเดินไปยังจุดหมาย
+using URTS_GPT.MovementSystem;
 
 namespace URTS_GPT.SelectionSystem
 {
@@ -15,6 +19,11 @@ namespace URTS_GPT.SelectionSystem
         private bool dragging;
         private Selectable hovered;
 
+        // 🆕 สำหรับคลิกพื้นสั่งเดิน
+        [SerializeField] private LayerMask groundLayer;
+        // 🆕 ระยะ Raycast ไปพื้น
+        [SerializeField] private float maxRaycastDistance = 1000f;
+
         private void Awake()
         {
             if (mainCamera == null) mainCamera = Camera.main;
@@ -22,8 +31,11 @@ namespace URTS_GPT.SelectionSystem
 
         private void Update()
         {
+            // — ระบบเลือก (ของเดิมคุณ) —
             UpdateHover();
             HandleClickAndDrag();
+            // — ระบบสั่งเดิน (เพิ่มใหม่) —
+            HandleRightClickMove();
         }
 
         private void UpdateHover()
@@ -142,6 +154,36 @@ namespace URTS_GPT.SelectionSystem
             Vector2 min = Vector2.Min(start, end);
             Vector2 max = Vector2.Max(start, end);
             return new Rect(min, max - min);
+        }
+
+        // ==============================
+        // 🆕 ส่วนสั่งเดินด้วยคลิกขวา
+        // ==============================
+        private void HandleRightClickMove()
+        {
+            // คลิกขวากดลงในเฟรมนี้ไหม
+            if (!Input.GetMouseButtonDown(1)) return;
+            // ถ้าเมาส์อยู่เหนือ UI ให้ไม่สั่งเดิน
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+
+            // ยิงเรย์จากตำแหน่งเมาส์ไปยังฉาก
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, maxRaycastDistance, groundLayer))
+            {
+                IssueMoveOrder(hit.point);
+            }
+        }
+
+        private void IssueMoveOrder(Vector3 destination)
+        {
+            foreach (var s in selected)
+            {
+                if (s == null) continue;
+                if (s.TryGetComponent<UnitMoveAgent>(out var mover))
+                {
+                    mover.MoveTo(destination);
+                }
+            }
         }
     }
 }
