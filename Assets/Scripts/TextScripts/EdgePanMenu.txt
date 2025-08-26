@@ -1,10 +1,4 @@
-﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Camera\EdgePanMenu.cs
-// Export time: 2025-08-26 15:37:34
-// ProjectPath : C:\UnityProject\URTS_GPT\Assets
-// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
-// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using URTS_GPT.CameraSystem; // ใช้ RtsCamera จากเนมสเปซที่คุณตั้ง
 

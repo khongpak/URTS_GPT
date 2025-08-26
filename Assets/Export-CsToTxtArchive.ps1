@@ -1,4 +1,19 @@
-﻿param(
+﻿# บังคับเอาต์พุตคอนโซลเป็น UTF-8 (แก้ไทยเพี้ยนใน CMD)
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
+
+# ทำให้ ProjectPath เป็นพาธสมบูรณ์และตัดเครื่องหมายคำพูด/สแลชส่วนเกิน
+param(
+  [string]$ProjectPath = (Get-Location).Path,
+  [string]$SourcePath  = $null,
+  [string]$OutRoot     = $null,
+  [switch]$IncludeTimeInFolder,
+  [switch]$OnlyUrts,
+  [string[]]$Systems = @()
+)
+
+$ProjectPath = [IO.Path]::GetFullPath($ProjectPath.Trim('"'))
+
+param(
   [string]$ProjectPath = (Get-Location).Path,
   [string]$SourcePath  = $null,
   [string]$OutRoot     = $null,

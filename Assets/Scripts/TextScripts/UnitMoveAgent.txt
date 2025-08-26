@@ -1,11 +1,5 @@
-﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Movement\UnitMoveAgent.cs
-// Export time: 2025-08-26 15:37:34
-// ProjectPath : C:\UnityProject\URTS_GPT\Assets
-// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
-// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
-
-// ðŸ†• à¹€à¸žà¸´à¹ˆà¸¡à¸ˆà¸²à¸à¸šà¸—à¸à¹ˆà¸­à¸™: using UnityEngine.EventSystems (à¸•à¸£à¸§à¸ˆà¸§à¹ˆà¸²à¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI)
-// ðŸ†• à¹€à¸žà¸´à¹ˆà¸¡à¸ˆà¸²à¸à¸šà¸—à¸à¹ˆà¸­à¸™: using URTS_GPT.MovementSystem (à¸­à¹‰à¸²à¸‡à¸–à¸¶à¸‡ UnitMoveAgent)
+// 🆕 เพิ่มจากบทก่อน: using UnityEngine.EventSystems (ตรวจว่าเมาส์อยู่เหนือ UI)
+// 🆕 เพิ่มจากบทก่อน: using URTS_GPT.MovementSystem (อ้างถึง UnitMoveAgent)
 using UnityEngine;
 using UnityEngine.AI;
 

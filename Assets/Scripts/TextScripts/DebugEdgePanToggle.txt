@@ -1,9 +1,3 @@
-﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Camera\DebugEdgePanToggle.cs
-// Export time: 2025-08-26 15:37:34
-// ProjectPath : C:\UnityProject\URTS_GPT\Assets
-// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
-// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
-
 using UnityEngine;
 
 namespace URTS_GPT.CameraSystem
@@ -17,9 +11,9 @@ namespace URTS_GPT.CameraSystem
     //         if (rtsCamera == null)
     //         {
     //     #if UNITY_2023_1_OR_NEWER
-    //             rtsCamera = FindFirstObjectByType<RtsCamera>(); // à¹ƒà¸«à¸¡à¹ˆ
+    //             rtsCamera = FindFirstObjectByType<RtsCamera>(); // ใหม่
     //     #else
-    //             rtsCamera = FindObjectOfType<RtsCamera>();      // à¹€à¸à¹ˆà¸²
+    //             rtsCamera = FindObjectOfType<RtsCamera>();      // เก่า
     //     #endif
     //         }
     //     }

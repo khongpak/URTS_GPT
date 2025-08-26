@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 818303005339852629}
   - component: {fileID: 8302790923115815738}
   - component: {fileID: 6804588909749329221}
+  - component: {fileID: 4107335695909401285}
   m_Layer: 6
   m_Name: Unit_Pawn
   m_TagString: Untagged
@@ -148,3 +149,19 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &4107335695909401285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806812296614374151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b9503afa811b6245acf16f5a006150c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 6804588909749329221}
+  stoppingDistance: 0.2
+  rotateTowardsVelocity: 1
+  debugGizmoRadius: 0.15

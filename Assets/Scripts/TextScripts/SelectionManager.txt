@@ -1,15 +1,9 @@
-﻿// Exported from: C:\UnityProject\URTS_GPT\Assets\Scripts\URTS_GPT\Selection\SelectionManager.cs
-// Export time: 2025-08-26 15:37:34
-// ProjectPath : C:\UnityProject\URTS_GPT\Assets
-// SourceRoot  : C:\UnityProject\URTS_GPT\Assets\Scripts
-// NOTE: ใช้งานในแชท (ประหยัด Token) — ใช้ใน Unity ต้องไฟล์ .cs ต้นฉบับ
-
 using System.Collections.Generic;
 using UnityEngine;
 using URTS_GPT.UI;
-// ðŸ†• à¸•à¸£à¸§à¸ˆà¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI
+// 🆕 ตรวจเมาส์อยู่เหนือ UI
 using UnityEngine.EventSystems;
-// ðŸ†• à¹ƒà¸Šà¹‰à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™à¹„à¸›à¸¢à¸±à¸‡à¸ˆà¸¸à¸”à¸«à¸¡à¸²à¸¢
+// 🆕 ใช้สั่งเดินไปยังจุดหมาย
 using URTS_GPT.MovementSystem;
 
 namespace URTS_GPT.SelectionSystem
@@ -17,7 +11,7 @@ namespace URTS_GPT.SelectionSystem
     public class SelectionManager : MonoBehaviour
     {
         [SerializeField] private Camera mainCamera;
-        [SerializeField] private LayerMask selectableMask = ~0; // à¹à¸™à¸°à¸™à¸³à¸à¸£à¸­à¸‡à¹ƒà¸«à¹‰à¹€à¸«à¸¥à¸·à¸­à¹€à¸‰à¸žà¸²à¸° Layer "Unit"
+        [SerializeField] private LayerMask selectableMask = ~0; // แนะนำกรองให้เหลือเฉพาะ Layer "Unit"
         [SerializeField] private SelectionBoxUI selectionBoxUI;
 
         private readonly HashSet<Selectable> selected = new HashSet<Selectable>();
@@ -25,9 +19,9 @@ namespace URTS_GPT.SelectionSystem
         private bool dragging;
         private Selectable hovered;
 
-        // ðŸ†• à¸ªà¸³à¸«à¸£à¸±à¸šà¸„à¸¥à¸´à¸à¸žà¸·à¹‰à¸™à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™
+        // 🆕 สำหรับคลิกพื้นสั่งเดิน
         [SerializeField] private LayerMask groundLayer;
-        // ðŸ†• à¸£à¸°à¸¢à¸° Raycast à¹„à¸›à¸žà¸·à¹‰à¸™
+        // 🆕 ระยะ Raycast ไปพื้น
         [SerializeField] private float maxRaycastDistance = 1000f;
 
         private void Awake()
@@ -37,10 +31,10 @@ namespace URTS_GPT.SelectionSystem
 
         private void Update()
         {
-            // â€” à¸£à¸°à¸šà¸šà¹€à¸¥à¸·à¸­à¸ (à¸‚à¸­à¸‡à¹€à¸”à¸´à¸¡à¸„à¸¸à¸“) â€”
+            // — ระบบเลือก (ของเดิมคุณ) —
             UpdateHover();
             HandleClickAndDrag();
-            // â€” à¸£à¸°à¸šà¸šà¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™ (à¹€à¸žà¸´à¹ˆà¸¡à¹ƒà¸«à¸¡à¹ˆ) â€”
+            // — ระบบสั่งเดิน (เพิ่มใหม่) —
             HandleRightClickMove();
         }
 
@@ -88,7 +82,7 @@ namespace URTS_GPT.SelectionSystem
                 selectionBoxUI?.End();
 
                 Rect screenRect = GetScreenRect(dragStart, end);
-                bool isBox = screenRect.size.magnitude > 10f; // à¸à¸±à¸™à¸„à¸¥à¸´à¸à¸ªà¸±à¹ˆà¸™
+                bool isBox = screenRect.size.magnitude > 10f; // กันคลิกสั่น
 
                 bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
                 bool ctrl  = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
@@ -112,7 +106,7 @@ namespace URTS_GPT.SelectionSystem
             }
             else
             {
-                // shift à¸«à¸£à¸·à¸­ none (none à¸–à¸¹à¸à¹€à¸„à¸¥à¸µà¸¢à¸£à¹Œà¹à¸¥à¹‰à¸§)
+                // shift หรือ none (none ถูกเคลียร์แล้ว)
                 Select(s);
             }
         }
@@ -122,7 +116,7 @@ namespace URTS_GPT.SelectionSystem
             foreach (var s in Selectable.Registry)
             {
                 Vector3 sp = mainCamera.WorldToScreenPoint(s.WorldCenter);
-                if (sp.z < 0f) continue; // à¸­à¸¢à¸¹à¹ˆà¸«à¸¥à¸±à¸‡à¸à¸¥à¹‰à¸­à¸‡
+                if (sp.z < 0f) continue; // อยู่หลังกล้อง
                 if (screenRect.Contains(sp))
                 {
                     if (ctrl && selected.Contains(s)) Deselect(s);
@@ -145,7 +139,7 @@ namespace URTS_GPT.SelectionSystem
             if (selected.Remove(s))
             {
                 s.SetSelected(false);
-                if (s == hovered) s.SetHovered(true); // à¸à¸¥à¸±à¸šà¹„à¸›à¹‚à¸Šà¸§à¹Œ hover à¸–à¹‰à¸²à¸¢à¸±à¸‡à¸­à¸¢à¸¹à¹ˆà¹ƒà¸•à¹‰à¹€à¸¡à¸²à¸ªà¹Œ
+                if (s == hovered) s.SetHovered(true); // กลับไปโชว์ hover ถ้ายังอยู่ใต้เมาส์
             }
         }
 
@@ -163,19 +157,20 @@ namespace URTS_GPT.SelectionSystem
         }
 
         // ==============================
-        // ðŸ†• à¸ªà¹ˆà¸§à¸™à¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™à¸”à¹‰à¸§à¸¢à¸„à¸¥à¸´à¸à¸‚à¸§à¸²
+        // 🆕 ส่วนสั่งเดินด้วยคลิกขวา
         // ==============================
         private void HandleRightClickMove()
         {
-            // à¸„à¸¥à¸´à¸à¸‚à¸§à¸²à¸à¸”à¸¥à¸‡à¹ƒà¸™à¹€à¸Ÿà¸£à¸¡à¸™à¸µà¹‰à¹„à¸«à¸¡
+            // คลิกขวากดลงในเฟรมนี้ไหม
             if (!Input.GetMouseButtonDown(1)) return;
-            // à¸–à¹‰à¸²à¹€à¸¡à¸²à¸ªà¹Œà¸­à¸¢à¸¹à¹ˆà¹€à¸«à¸™à¸·à¸­ UI à¹ƒà¸«à¹‰à¹„à¸¡à¹ˆà¸ªà¸±à¹ˆà¸‡à¹€à¸”à¸´à¸™
+            // ถ้าเมาส์อยู่เหนือ UI ให้ไม่สั่งเดิน
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-            // à¸¢à¸´à¸‡à¹€à¸£à¸¢à¹Œà¸ˆà¸²à¸à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¹€à¸¡à¸²à¸ªà¹Œà¹„à¸›à¸¢à¸±à¸‡à¸‰à¸²à¸
+            // ยิงเรย์จากตำแหน่งเมาส์ไปยังฉาก
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, maxRaycastDistance, groundLayer))
             {
+                ClickMoveMarker.Spawn(hit.point);
                 IssueMoveOrder(hit.point);
             }
         }

@@ -1,27 +1,45 @@
-﻿@echo off
+﻿:: ExportToTxt.bat — fixed
+@echo off
 setlocal
-set "PROJECT=%~dp0"
-set "PS1=%~dp0Export-CsToTxtArchive.ps1"
 
-if not exist "%PS1%" (
-  echo [ERROR] ไม่พบไฟล์ PowerShell: "%PS1%"
-  echo กรุณาวาง Export-CsToTxtArchive.ps1 ไว้ข้างๆ ไฟล์ .bat นี้
-  pause
-  exit /b 1
+:: ใช้ UTF-8 กันข้อความไทยเพี้ยน
+chcp 65001 >nul
+
+:: โฟลเดอร์ที่ไฟล์ .bat นี้อยู่
+set "HERE=%~dp0"
+
+:: คำนวณรากโปรเจกต์:
+:: - ถ้า .bat อยู่ในโฟลเดอร์ชื่อ "Assets" => รากโปรเจกต์ = โฟลเดอร์แม่ของ Assets
+:: - ถ้าไม่ใช่ => ใช้โฟลเดอร์ปัจจุบันเป็นรากโปรเจกต์
+for %%I in ("%HERE%") do set "CURFOLDER=%%~nxI"
+set "PROJECT=%HERE%"
+if /I "%CURFOLDER%"=="Assets" (
+  for %%J in ("%HERE%..\") do set "PROJECT=%%~fJ"
 )
 
-REM ค่าเริ่มต้น: จำกัดเฉพาะ Scripts\URTS_GPT และเพิ่มเวลาในชื่อโฟลเดอร์
-REM ถ้าต้องการระบุระบบย่อยเฉพาะ ให้พิมพ์ต่อท้ายตอนรัน เช่น:
-REM   ExportToTxt.bat -Systems SelectionSystem,UI
-powershell -NoProfile -ExecutionPolicy Bypass -File "%PS1%" -ProjectPath "%PROJECT%" -OnlyUrts -IncludeTimeInFolder %*
+:: ไฟล์ PowerShell ที่จะเรียก (ต้องวางไว้โฟลเดอร์เดียวกับ .bat)
+set "PS1=%HERE%Export-CsToTxtArchive.ps1"
+if not exist "%PS1%" (
+  echo [ERROR] ไม่พบไฟล์ PowerShell: "%PS1%"
+  echo กรุณาวาง Export-CsToTxtArchive.ps1 ไว้โฟลเดอร์เดียวกับไฟล์ .bat
+  pause & exit /b 1
+)
+
+echo [INFO] Project root  : %PROJECT%
+echo [INFO] PowerShell PS1: %PS1%
+echo.
+
+:: เรียกสคริปต์ด้วย -File (ปลอดภัยกว่ามาก)
+powershell -NoLogo -NoProfile -ExecutionPolicy Bypass ^
+  -File "%PS1%" -ProjectPath "%PROJECT%" -OnlyUrts -IncludeTimeInFolder %*
 
 if errorlevel 1 (
   echo.
-  echo [FAIL] มีข้อผิดพลาดระหว่างส่งออก (.txt) -- ดูข้อความด้านบนหรือไฟล์ error.log ในปลายทาง
+  echo [FAIL] มีข้อผิดพลาดระหว่างส่งออก (.txt) -- ดูข้อความด้านบนหรือ error.log ในปลายทาง
   pause
 ) else (
   echo.
-  echo [OK] เสร็จแล้ว! กดปิดหน้าต่างนี้ได้เลย
+  echo [OK] เสร็จแล้ว! ปิดหน้าต่างนี้ได้เลย
   pause
 )
 endlocal

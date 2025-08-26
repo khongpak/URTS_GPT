@@ -1432,7 +1432,7 @@ MonoBehaviour:
   selectionBoxUI: {fileID: 1861277953}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   maxRaycastDistance: 1000
 --- !u!4 &2062357508
 Transform:
@@ -1460,10 +1460,6 @@ PrefabInstance:
     - target: {fileID: 1806812296614374151, guid: 8ebd5fdb57026c14a9f1d924f6161f3b, type: 3}
       propertyPath: m_Name
       value: Unit_Pawn
-      objectReference: {fileID: 0}
-    - target: {fileID: 1806812296614374151, guid: 8ebd5fdb57026c14a9f1d924f6161f3b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7380469629880151827, guid: 8ebd5fdb57026c14a9f1d924f6161f3b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1516,7 +1512,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1088647083}
   - {fileID: 1768413767}
-  - {fileID: 4354205}
   - {fileID: 2018035294}
   - {fileID: 1820267320}
   - {fileID: 25105092}
@@ -1525,3 +1520,4 @@ SceneRoots:
   - {fileID: 752123654}
   - {fileID: 1062562708}
   - {fileID: 2062357508}
+  - {fileID: 4354205}

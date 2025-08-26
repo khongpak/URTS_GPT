@@ -170,6 +170,7 @@ namespace URTS_GPT.SelectionSystem
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, maxRaycastDistance, groundLayer))
             {
+                ClickMoveMarker.Spawn(hit.point);
                 IssueMoveOrder(hit.point);
             }
         }
