@@ -1,0 +1,16 @@
+﻿@startuml
+class Player {
+    - health : int
+    - speed : float
+    + Move()
+    + Attack()
+}
+
+class Enemy {
+    - health : int
+    + Chase()
+    + Attack()
+}
+
+Player --> Enemy : attacks
+@enduml

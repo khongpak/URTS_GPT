@@ -1,0 +1,26 @@
+﻿@startuml
+skinparam Shadowing false
+skinparam ParticipantPadding 20
+
+actor Player
+participant Input
+participant RtsCamera
+participant Transform
+
+== Reset Camera Position ==
+
+Player -> Input : กดปุ่ม F
+Input --> RtsCamera : Input.GetKeyDown(F)
+activate RtsCamera
+
+alt resetRotation = true
+    RtsCamera -> Transform : SetPositionAndRotation(startCameraPos, startCameraRota)
+else
+    RtsCamera -> Transform : position = startCameraPos
+end
+
+RtsCamera -> RtsCamera : moveVel = Vector3.zero
+RtsCamera -> RtsCamera : zoomVel = 0.0
+
+deactivate RtsCamera
+@enduml
