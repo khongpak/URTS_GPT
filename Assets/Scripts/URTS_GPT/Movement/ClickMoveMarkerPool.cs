@@ -1,0 +1,74 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace URTS_GPT.MovementSystem
+{
+    public sealed class ClickMoveMarkerPool : MonoBehaviour
+    {
+        [SerializeField] private ClickMoveMarker markerPrefab;
+        [SerializeField] private int initialSize = 8;
+
+        private readonly Queue<ClickMoveMarker> pool = new Queue<ClickMoveMarker>();
+        private static ClickMoveMarkerPool instance;
+
+        void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
+            if (markerPrefab == null)
+            {
+                markerPrefab = new GameObject("ClickMoveMarker").AddComponent<ClickMoveMarker>();
+            }
+
+            Prewarm();
+        }
+
+        private void Prewarm()
+        {
+            for (int i = 0; i < Mathf.Max(1, initialSize); i++)
+            {
+                ClickMoveMarker m = Create();
+                pool.Enqueue(m);
+                m.gameObject.SetActive(false);
+            }
+        }
+
+        private ClickMoveMarker Create()
+        {
+            ClickMoveMarker m = Instantiate(markerPrefab);
+            m.gameObject.SetActive(false);
+            return m;
+        }
+
+        private ClickMoveMarker Get()
+        {
+            return pool.Count > 0 ? pool.Dequeue() : Create();
+        }
+
+        public static void Spawn(Vector3 position)
+        {
+            if (instance == null)
+            {
+                GameObject go = new GameObject("ClickMoveMarkerPool");
+                instance = go.AddComponent<ClickMoveMarkerPool>();
+            }
+
+            ClickMoveMarker marker = instance.Get();
+            marker.transform.position = position;
+            marker.gameObject.SetActive(true);
+            instance.StartCoroutine(instance.ReturnLater(marker));
+        }
+
+        private System.Collections.IEnumerator ReturnLater(ClickMoveMarker m)
+        {
+            yield return new WaitForSeconds(1.6f); // ชีวิตของ Marker = 1.5s → เผื่อ 0.1s
+            m.gameObject.SetActive(false);
+            pool.Enqueue(m);
+        }
+    }
+}
