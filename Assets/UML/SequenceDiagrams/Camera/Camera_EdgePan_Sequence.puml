@@ -1,0 +1,46 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    participant Input
+    participant RtsCamera
+    participant Vector3
+    participant EventSystem
+    participant Screen
+    participant Transform
+
+    == เลื่อนเมาส์ ==
+
+    opt edgePan && !overUI = true
+        Player -> Input : ขยับเมาส์
+        RtsCamera -> Input : Get mousePosition
+        Input --> RtsCamera : return Vector3 m
+        
+        opt m.x <= edge
+            RtsCamera -> RtsCamera : desiredMove += -right * panSpeed
+        end
+
+        opt m.x >= (Screen.width - edge)
+            RtsCamera -> Screen : Get Width
+            Screen --> RtsCamera : return Width
+            RtsCamera -> RtsCamera : desiredMove += right * panSpeed
+        end
+
+        opt m.y <= edge
+            RtsCamera -> RtsCamera : desiredMove += -fwd * panSpeed
+        end
+
+        opt m.y >= (Screen.height - edge)
+            RtsCamera -> Screen : Get Height
+            Screen --> RtsCamera : return Height
+            RtsCamera -> RtsCamera : desiredMove += fwd * panSpeed
+        end
+    end
+
+    == ปรับตำแหน่งแบบ Smooth ==
+    RtsCamera -> Vector3 : targetPos = pos + desiredMove * Time.deltaTime
+    RtsCamera -> Vector3 : SmoothDamp(pos, targetPos, ref moveVel, moveSmoothTime)
+    RtsCamera -> Transform : transform.position = pos
+
+@enduml

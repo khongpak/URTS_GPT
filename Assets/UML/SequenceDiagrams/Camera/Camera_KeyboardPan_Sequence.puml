@@ -1,0 +1,30 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    participant Input
+    participant RtsCamera
+    participant Vector3
+    participant Transform
+
+    == กดปุ่ม WASD หรือ ลูกศร ==
+    Player -> Input : GetAxisRaw("Horizontal")
+    Input --> RtsCamera : return h
+
+    Player -> Input : GetAxisRaw("Vertical")
+    Input --> RtsCamera : return v
+
+    == คำนวณทิศทางเคลื่อน ==
+    RtsCamera -> Vector3 : ProjectOnPlane(transform.forward, Vector3.up)
+    RtsCamera -> Vector3 : ProjectOnPlane(transform.right, Vector3.up)
+
+    RtsCamera -> Vector3 : desiredMove = (right * h + fwd * v) * panSpeed 
+    RtsCamera -> Vector3 : targetPos = pos + desiredMove * Time.deltaTime
+
+    == ปรับตำแหน่งแบบ Smooth ==
+
+    RtsCamera -> Vector3 : SmoothDamp(pos, targetPos, ref moveVel, moveSmoothTime)
+    RtsCamera -> Transform : transform.position = pos
+   
+@enduml
