@@ -1,0 +1,30 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    participant Input
+    participant RtsCamera
+    participant Mathf
+    participant Time
+
+    Player -> Input : Mouse ScrollWheel
+    RtsCamera -> Input : GetAxisRaw
+    Input --> RtsCamera : return float scroll
+
+    opt invertScroll = true
+        RtsCamera -> RtsCamera : scroll = -scroll
+    end
+
+    RtsCamera -> Time : Get deltaTime
+    Time --> RtsCamera : return deltaTime
+
+    RtsCamera -> Mathf : Clamp (pos.y - scroll * zoomSpeed * deltaTime, minY, maxY)
+    Mathf --> RtsCamera : return float targetY
+
+    RtsCamera -> Mathf : SmoothDamp(pos.y, targetY, ref zoomVel, zoomSmoothTime)
+    Mathf --> RtsCamera : return float newY
+
+    RtsCamera -> RtsCamera : pos.y = newY
+
+@enduml

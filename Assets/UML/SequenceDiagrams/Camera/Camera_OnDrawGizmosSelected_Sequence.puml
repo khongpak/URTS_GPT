@@ -1,0 +1,33 @@
+﻿@startuml
+skinparam Shadowing false
+skinparam ParticipantPadding 20
+
+participant RtsCamera
+participant Gizmos
+participant Vector3
+participant Color
+participant Mathf
+
+alt useBounds = false
+    RtsCamera -> RtsCamera : return
+else useBounds = true
+    RtsCamera -> Color : get yellow
+    Color --> RtsCamera : return Color.yellow
+    RtsCamera -> Gizmos : Gizmos.color = Color.yellow
+
+    RtsCamera -> Vector3 : new Vector3(CenterX,CenterY,CenterZ)
+    Vector3 --> RtsCamera : center
+
+    RtsCamera -> Vector3 : new Vector3(x,y,z)
+    Vector3 -> Mathf : Abs
+    Mathf --> Vector3 : x = maxXZ.x - minXZ.x
+    Vector3 -> Mathf : Abs
+    Mathf --> Vector3 : z = maxXZ.y - minXZ.y 
+    Vector3 --> RtsCamera : size
+
+    RtsCamera -> Gizmos: DrawWireCube(center, size)
+
+end alt
+
+
+@enduml

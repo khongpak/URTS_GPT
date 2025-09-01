@@ -1,0 +1,22 @@
+﻿@startuml
+skinparam Shadowing false
+skinparam ParticipantPadding 20
+
+/' 
+ClampBounds: จำกัดตำแหน่งกล้องให้อยู่ในพื้นที่ที่กำหนด (minXZ/maxXZ) 
+เฉพาะเมื่อเปิดใช้ useBounds = true 
+'/
+participant RtsCamera
+participant Mathf
+
+opt useBounds = true
+    RtsCamera -> Mathf : Clamp(pos.x, minXZ.x, maxXZ.x)
+    Mathf --> RtsCamera : float clampedX
+    RtsCamera -> RtsCamera : pos.x = clampedX
+
+    RtsCamera -> Mathf : Clamp(pos.z, minXZ.y, maxXZ.y)
+    Mathf --> RtsCamera : float clampedZ
+    RtsCamera -> RtsCamera : pos.z = clampedZ
+end opt
+
+@enduml
