@@ -1,0 +1,19 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+    
+    class URTS_GPT.SelectionSystem.Selectable{
+        + <<static>> Registry : HashSet<Selectable>
+
+        ==Renderers to tint via Emission==
+        - renderers : Renderer[]
+        - selectedColor : Color
+        - hoverColor : Color
+        - emission : float
+
+        - isSelected : bool
+        - isHovered : bool
+        - mpb : MaterialPropertyBlock
+    }
+
+@enduml

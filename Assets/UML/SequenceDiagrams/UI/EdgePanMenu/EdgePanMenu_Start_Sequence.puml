@@ -13,15 +13,15 @@
 
     opt edgePanToggle != null
         EdgePanMenu -> Toggle : set isOn = true/false
-    end opt
+    end
 
     opt rtsCamera != null
         EdgePanMenu -> RtsCamera : SetEdgePan(true/false)
-    end opt
+    end
 
     opt edgePanToggle != null 
         EdgePanMenu -> Toggle : onValueChanged
         Toggle -> Toggle : AddListener(OnToggleChanged)
-    end opt
+    end
 
 @enduml
