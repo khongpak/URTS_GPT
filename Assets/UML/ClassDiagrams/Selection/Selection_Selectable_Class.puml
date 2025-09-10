@@ -16,7 +16,13 @@
         - mpb : MaterialPropertyBlock
 
         + WorldCenter : Vector3 {readOnly}
+        + IsSelected : bool {readOnly}
 
+        --
+        
+        + SetSelected(value : bool) : void
+        + ToggleSelected() : void
+        + SetHovered(value : bool) : void
         - OnEnable() : void
         - OnDisable() : void
         - RefreshVisual() : void

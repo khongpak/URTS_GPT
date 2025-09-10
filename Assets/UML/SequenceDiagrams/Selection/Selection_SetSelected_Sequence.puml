@@ -1,0 +1,12 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    participant Selectable
+
+    Selectable -> Selectable : SetSelected(value)
+    note right: isSelected = value
+    Selectable -> Selectable : RefreshVisual()
+    note right: ปรับ EmissionColor ของ renderer
+
+@enduml
