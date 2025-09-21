@@ -1,1 +1,11 @@
-﻿
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    class URTS_GPT.SelectionSystem.SelectionManager
+
+        - mainCamera : Camera
+        - selectableMask : LayerMask
+        - selectionBoxUI : SelectionBoxUI
+        -
+@enduml
