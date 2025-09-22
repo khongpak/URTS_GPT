@@ -4,8 +4,32 @@
 
     class URTS_GPT.SelectionSystem.SelectionManager
 
-        - mainCamera : Camera
-        - selectableMask : LayerMask
-        - selectionBoxUI : SelectionBoxUI
-        -
+        - mainCamera : Camera <<Serialized>>
+        - selectableMask : LayerMask <<Serialized>>
+        - selectionBoxUI : SelectionBoxUI <<Serialized>>
+        - selected : HashSet<Selectable> {readonly}
+        - dragStart : Vector2
+        - dragging : bool
+        - hovered : Selectable
+        - groundLayer : LayerMask <<Serialized>>
+        - maxRaycastDistance : float <<Serialized>>
+
+        + Awake() : void
+        + Update() : void
+
+        - UpdateHover() : void
+        - Raycast() : (Selectable, RaycastHit)?
+            note right of SelectionManager::Raycast
+                Returns nullable tuple of Selectable and RaycastHit
+            end note
+        - HandleClickAndDrag() : void
+        - ClickSelect(shift : bool, ctrl : bool) : void
+        - BoxSelect(screenRect: Rect, shift : bool, ctrl : bool) : void
+        - Select(s : Selectable) : void
+        - Deselect(s : Selectable) : void
+        - ClearSelection() : void
+        - GetScreenRect(start : Vector2, end : Vector2) : <<static>> Rect
+        - HandleRightClickMove() : void
+        - IssueMoveOrder(destination : Vector3) : void
+
 @enduml
