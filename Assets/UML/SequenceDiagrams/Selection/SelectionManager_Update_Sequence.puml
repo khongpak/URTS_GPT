@@ -1,0 +1,17 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    participant SelectionManager
+
+    Player -> SelectionManager : Update()
+    activate SelectionManager
+
+    SelectionManager -> SelectionManager : UpdateHover()
+    SelectionManager -> SelectionManager : HandleClickAndDrag()
+
+    SelectionManager -> SelectionManager : HandleRightClickMove()
+
+    deactivate SelectionManager
+@enduml

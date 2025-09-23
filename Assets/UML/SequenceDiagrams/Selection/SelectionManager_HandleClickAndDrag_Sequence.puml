@@ -1,0 +1,21 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    Participant SelectionManager
+    Participant Input
+    Participant selectionBoxUI
+
+    opt เมาส์ซ้ายถูกกดค้าง
+        SelectionManager -> Input : GetMouseButtonDown(0)
+        Input --> SelectionManager :Return mousePosition
+        SelectionManager -> SelectionManager : dragStart = mousePosition
+        SelectionManager -> SelectionManager : dragging = true
+        
+        opt selectionBoxUI != null
+            SelectionManager -> selectionBoxUI : Begin(dragStart)
+        end
+    end
+    
+@enduml
