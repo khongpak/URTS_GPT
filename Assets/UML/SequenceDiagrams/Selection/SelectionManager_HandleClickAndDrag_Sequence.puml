@@ -6,6 +6,7 @@
     Participant SelectionManager
     Participant Input
     Participant selectionBoxUI
+    Participant GetScreenRect
 
     opt เมาส์ซ้ายถูกกดค้าง
         SelectionManager -> Input : GetMouseButtonDown(0)
@@ -17,5 +18,34 @@
             SelectionManager -> selectionBoxUI : Begin(dragStart)
         end
     end
+
+    opt dragging == true && Input.GetMouseButton(0)
+        opt selectionBoxUI != null
+            SelectionManager -> Input : mousePosition
+            Input --> SelectionManager : return mousePosition
+            SelectionManager -> selectionBoxUI : Drag(mousePosition)
+        end
+    end
+
+    opt dragging == true && Input.GetMouseButtonUp(0)
+        SelectionManager -> SelectionManager : dragging = false
+        SelectionManager -> Input : mousePosition
+        Input --> SelectionManager : return mousePosition
+        SelectionManager -> SelectionManager : var = (Vector2)mousePosition
+
+        opt selectionBoxUI != null
+            SelectionManager -> selectionBoxUI : End
+        end
+
+        SelectionManager -> GetScreenRect : (dragStart, end)
+        GetScreenRect --> SelectionManager : return screenRect
+
+        alt screenRect.size.magnitude > 10f
+            SelectionManager -> SelectionManager : isBox = true
+        else
+            SelectionManager -> SelectionManager : isBox = false
+        end
     
+    
+    end
 @enduml
