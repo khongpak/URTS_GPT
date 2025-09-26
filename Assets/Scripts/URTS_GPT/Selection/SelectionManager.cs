@@ -88,8 +88,14 @@ namespace URTS_GPT.SelectionSystem
                 bool ctrl  = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
                 if (!shift && !ctrl) ClearSelection();
-                if (isBox) BoxSelect(screenRect, shift, ctrl);
-                else ClickSelect(shift, ctrl);
+                if (isBox)
+                {
+                    BoxSelect(screenRect, shift, ctrl);
+                }
+                else
+                {
+                    ClickSelect(shift, ctrl);
+                }
             }
         }
 

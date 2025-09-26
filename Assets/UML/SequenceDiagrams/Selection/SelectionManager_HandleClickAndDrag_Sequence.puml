@@ -31,7 +31,7 @@
         SelectionManager -> SelectionManager : dragging = false
         SelectionManager -> Input : mousePosition
         Input --> SelectionManager : return mousePosition
-        SelectionManager -> SelectionManager : var = (Vector2)mousePosition
+        SelectionManager -> SelectionManager : end = (Vector2)mousePosition
 
         opt selectionBoxUI != null
             SelectionManager -> selectionBoxUI : End
@@ -46,6 +46,26 @@
             SelectionManager -> SelectionManager : isBox = false
         end
     
-    
+        alt Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)
+            SelectionManager -> SelectionManager : shift = true
+        else
+            SelectionManager -> SelectionManager : shift = false
+        end
+
+        alt Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)
+            SelectionManager -> SelectionManager : ctrl = true
+        else
+            SelectionManager -> SelectionManager : ctrl = false
+        end
+
+        opt ไม่กด shift และ ไม่กด ctrl
+            SelectionManager -> SelectionManager : ClearSelection()
+        end
+
+        alt isBox == true
+            SelectionManager -> SelectionManager : BoxSelect(screenRect, shift, ctrl)
+        else
+            SelectionManager -> SelectionManager : ClickSelect(shift,ctrl)
+        end  
     end
 @enduml
