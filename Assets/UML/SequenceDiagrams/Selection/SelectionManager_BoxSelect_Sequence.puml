@@ -1,0 +1,25 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    participant SelectionManager
+    participant Selectable
+
+    loop for each s in Selectable.Registry
+        SelectionManager -> SelectionManager : s = current Selectable
+        SelectionManager -> SelectionManager : sp = mainCamera.WorldToScreenPoint(s.WorldCenter)
+
+        opt sp.z < 0
+            SelectionManager -> SelectionManager : continue
+        end
+
+        opt screenRect.Contains(sp)
+            alt ctrl == true && selected.Contains(s)
+                SelectionManager -> SelectionManager : Deselect(s)
+            else
+                SelectionManager -> SelectionManager : Select(s)
+            end
+        end
+    end
+
+@enduml

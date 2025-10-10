@@ -1,0 +1,27 @@
+﻿@startuml
+    skinparam Shadowing false
+    skinparam ParticipantPadding 20
+
+    actor Player
+    Participant SelectionManager
+
+    SelectionManager -> SelectionManager : Raycast()
+    SelectionManager -> SelectionManager : hit = Raycast()
+
+    opt !hit.HasValue
+        SelectionManager -> SelectionManager : return
+    end
+
+    SelectionManager -> SelectionManager : s = hit.Value.selectable
+
+    alt ctrl==true //กด ctrl
+        alt selected.Contains(s) == true
+            SelectionManager -> SelectionManager : Deselect(s)
+        else
+            SelectionManager -> SelectionManager : Select(s)
+    else
+        SelectionManager -> SelectionManager : Select(s)
+    end
+
+
+@enduml
